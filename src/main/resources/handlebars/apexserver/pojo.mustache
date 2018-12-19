@@ -1,0 +1,21 @@
+/**
+* {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
+*/
+public class {{classname}}{{#parent}} extends {{{parent}}}{{/parent}}{{#interfaces}}{{#@first}} implements {{/@first}}{{^@first}}, {{/@first}}{{.}}{{/interfaces}} {
+
+{{#vars}}
+    {{#isEnum}}
+    {{^isContainer}}
+    {{>modelInnerEnum}}
+    {{/isContainer}}
+    {{/isEnum}}
+    {{#items.isEnum}}
+    {{#items}}
+    {{^isContainer}}
+    {{>modelInnerEnum}}
+    {{/isContainer}}
+    {{/items}}
+    {{/items.isEnum}}
+    public {{{datatypeWithEnum}}} {{name}} { get; {{#isReadOnly}}private {{/isReadOnly}}set; }
+{{/vars}}
+}

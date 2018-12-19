@@ -10,15 +10,11 @@ import java.util.*;
 
 public class ApexServerCodegen extends AbstractJavaCodegen {
 
-	private static final String CLASS_PREFIX = "classPrefix";
 	private static final String API_VERSION = "apiVersion";
 	private static final String BUILD_METHOD = "buildMethod";
-	private static final String NAMED_CREDENTIAL = "namedCredential";
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApexServerCodegen.class);
-	private String classPrefix = "swag";
-	private String apiVersion = "39.0";
+	private String apiVersion = "44.0";
 	private String buildMethod = "sfdx";
-	private String namedCredential = classPrefix;
 	private String srcPath = "force-app/main/default/";
 	protected static final String APEX_SERVER_TEMPLATE_DIRECTORY_NAME = "apexserver";
 
@@ -32,13 +28,12 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		apiPackage = "classes";
 		modelPackage = "classes";
 		testPackage = "force-app.main.default.classes";
-		modelNamePrefix = classPrefix;
 		dateLibrary = "";
 
 		// apiTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
 		// apiTestTemplateFiles.put("api_test.mustache", ".cls");
 		// apiTestTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
-		// modelTemplateFiles.put("model.mustache", ".cls");
+		//modelTemplateFiles.put("model.mustache", ".cls");
 		// modelTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
 		// modelTestTemplateFiles.put("model_test.mustache", ".cls");
 		// modelTestTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
@@ -103,15 +98,14 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		apiDocTemplateFiles.clear();
 
 		apiTemplateFiles.put("api.mustache", ".cls");
+		apiTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
 
+		modelTemplateFiles.put("model.mustache", ".cls");
+		modelTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
 
 		importMapping.clear();
 
 
-		if (additionalProperties.containsKey(CLASS_PREFIX)) {
-			setClassPrefix((String) additionalProperties.get(CLASS_PREFIX));
-		}
-		additionalProperties.put(CLASS_PREFIX, classPrefix);
 
 		if (additionalProperties.containsKey(API_VERSION)) {
 			setApiVersion(toApiVersion((String) additionalProperties.get(API_VERSION)));
@@ -123,10 +117,6 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		}
 		additionalProperties.put(BUILD_METHOD, buildMethod);
 
-		if (additionalProperties.containsKey(NAMED_CREDENTIAL)) {
-			setNamedCredential((String)additionalProperties.get(NAMED_CREDENTIAL));
-		}
-		additionalProperties.put(NAMED_CREDENTIAL, namedCredential);
 
 		postProcessOpts();
 	}
@@ -138,14 +128,20 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 	}
 
 	@Override
+	public String toParamName(String name) {
+		return name;
+	}
+
+	@Override
 	public String toModelName(String name) {
 		String modelName = super.toModelName(name);
 
 		// Max length is 40; save the last 4 for "Test"
-		if (modelName.length() > 36) {
-			modelName = modelName.substring(0, 36);
+		if (modelName.length() > 32) {
+			modelName = modelName.substring(0, 32);
 		}
-		return modelName;
+
+		return modelName + "_DTO";
 	}
 
 	@Override
@@ -169,15 +165,7 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		this.buildMethod = buildMethod;
 	}
 
-	public void setNamedCredential(String namedCredential) {
-		this.namedCredential = namedCredential;
-	}
 
-	public void setClassPrefix(String classPrefix) {
-		// the best thing we can do without namespacing in Apex
-		modelNamePrefix = classPrefix;
-		this.classPrefix = classPrefix;
-	}
 
 	public void setApiVersion(String apiVersion) {
 		this.apiVersion = apiVersion;
@@ -215,10 +203,6 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 	}
 
 
-	@Override
-	public String toApiName(String name) {
-		return camelize(classPrefix + super.toApiName(name));
-	}
 
 
 	@Override
@@ -236,6 +220,10 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		return "Generates an Apex API server library (beta).";
 	}
 
+	@Override
+	public String toApiName(String name) {
+		return camelize(name + "Controller");
+	}
 
 
 }

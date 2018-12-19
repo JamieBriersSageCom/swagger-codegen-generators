@@ -1,171 +1,508 @@
 {
-	"openapi": "3.0.0",
-	"info": {
-		"version": "v1",
-		"title": "Employee Api",
-		"description": "Api for employees",
-		"termsOfService": "None",
-		"contact": {
-			"name": "Sage People",
-			"url": "https://www.sage.com",
-			"email": "contact@sage.com"
+	"openapi" : "3.0.0",
+	"info" : {
+		"title" : "Employee Api",
+		"description" : "Employee API\n",
+		"contact" : {
+			"email" : "jamie.briers@sage.com"
+		},
+		"version" : "1.0.0"
+	},
+	"externalDocs" : {
+		"description" : "Find out more about Swagger",
+		"url" : "http://swagger.io"
+	},
+	"servers" : [ {
+		"url" : "https://virtserver.swaggerhub.com/Scrum-Dogs-Chris/API-POC/1.0.0",
+		"description" : "SwaggerHub API Auto Mocking"
+	}, {
+		"url" : "https://virtserver.swaggerhub.com/ScrumDogs/EmployeeNewStarters/1.0.0"
+	}, {
+		"url" : "https://speed-fun-3452-dev-ed.cs89.my.salesforce.com/services/apexrest",
+		"description" : "SwaggerHub API Auto Mocking"
+	} ],
+	"security" : [ {
+		"bearerAuth" : [ ]
+	} ],
+	"tags" : [ {
+		"name" : "Employee",
+		"description" : "Access to Employees"
+	} ],
+	"paths" : {
+		"/services/apexrest/employees/starters" : {
+			"get" : {
+				"tags" : [ "NewStarters" ],
+				"summary" : "New Starters",
+				"description" : "Retrieve employee new starters between two dates",
+				"operationId" : "getNewStarters",
+				"parameters" : [ {
+					"name" : "startedfrom",
+					"in" : "query",
+					"description" : "Show new starters from date specified in startedFrom",
+					"required" : true,
+					"style" : "form",
+					"explode" : true,
+					"schema" : {
+						"type" : "string",
+						"format" : "date"
+					},
+					"examples" : {
+						"startedFrom" : {
+							"summary" : "Full date format as defined in RFC 3339, section 5.6",
+							"value" : "2018-01-01T00:00:00.000Z"
+						}
+					}
+				}, {
+					"name" : "startedto",
+					"in" : "query",
+					"description" : "Show new starters to date specified in startedTo",
+					"required" : true,
+					"style" : "form",
+					"explode" : true,
+					"schema" : {
+						"type" : "string",
+						"format" : "date"
+					},
+					"examples" : {
+						"startedTo" : {
+							"summary" : "Full date format as defined in RFC 3339, section 5.6",
+							"value" : "2018-01-01T00:00:00.000Z"
+						}
+					}
+				} ],
+				"responses" : {
+					"200" : {
+						"description" : "Success OK",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/StartersResponse"
+								}
+							}
+						}
+					},
+					"204" : {
+						"description" : "No Content"
+					},
+					"400" : {
+						"description" : "Bad Request"
+					},
+					"401" : {
+						"description" : "Unauthorized",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/responses/UnauthorizedError"
+								}
+							}
+						}
+					},
+					"404" : {
+						"description" : "Not Found"
+					},
+					"406" : {
+						"description" : "Not Acceptable"
+					}
+				}
+			}
+		},
+		"/services/apexrest/employees/payroll" : {
+			"post" : {
+				"tags" : [ "Payroll" ],
+				"summary" : "Payroll update",
+				"operationId" : "postPayrollUpdate",
+				"requestBody" : {
+					"description" : "Data coming in from payroll system",
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/PayrollRequest"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "Success OK",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/PayrollResponse"
+								}
+							}
+						}
+					},
+					"400" : {
+						"description" : "Bad Request"
+					},
+					"401" : {
+						"description" : "Unauthorized",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/responses/UnauthorizedError"
+								}
+							}
+						}
+					},
+					"404" : {
+						"description" : "Not Found"
+					},
+					"406" : {
+						"description" : "Not Acceptable"
+					}
+				}
+			}
+		},
+		"/services/apexrest/employees/absencebalances" : {
+			"get" : {
+				"tags" : [ "AbsenceBalances" ],
+				"summary" : "Absence Balances",
+				"description" : "Retrieve employees absence balances",
+				"operationId" : "getAbsenceBalances",
+				"parameters" : [ {
+					"name" : "date",
+					"in" : "query",
+					"description" : "Show balances at the specified date",
+					"required" : true,
+					"style" : "form",
+					"explode" : true,
+					"schema" : {
+						"type" : "string",
+						"format" : "date"
+					},
+					"examples" : {
+						"startedFrom" : {
+							"summary" : "Full date format as defined in RFC 3339, section 5.6",
+							"value" : "2018-01-01T00:00:00.000Z"
+						}
+					}
+				}, {
+					"name" : "type",
+					"in" : "query",
+					"description" : "Type of balance to show",
+					"required" : true,
+					"style" : "form",
+					"explode" : true,
+					"schema" : {
+						"type" : "string",
+						"default" : "annual",
+						"enum" : [ "annual" ]
+					},
+					"examples" : {
+						"startedFrom" : {
+							"summary" : "Balance type - only annual supported",
+							"value" : "annual"
+						}
+					}
+				}, {
+					"name" : "startingFrom",
+					"in" : "query",
+					"description" : "The ID of the record to start the paging from",
+					"required" : false,
+					"style" : "form",
+					"explode" : true,
+					"schema" : {
+						"type" : "string"
+					},
+					"examples" : {
+						"startingFrom" : {
+							"summary" : "Apex ID of the object to start paging from",
+							"value" : "a040E000002OIwuQAG"
+						}
+					}
+				}, {
+					"name" : "pageSize",
+					"in" : "query",
+					"description" : "The number of items in the page to return",
+					"required" : false,
+					"style" : "form",
+					"explode" : true,
+					"schema" : {
+						"maximum" : 500,
+						"minimum" : 1,
+						"type" : "string",
+						"format" : "integer"
+					},
+					"examples" : {
+						"pageSize" : {
+							"summary" : "Apex ID of the object to start paging from",
+							"value" : 250
+						}
+					}
+				} ],
+				"responses" : {
+					"200" : {
+						"description" : "Success OK"
+					},
+					"204" : {
+						"description" : "No Content"
+					},
+					"400" : {
+						"description" : "Bad Request"
+					},
+					"401" : {
+						"description" : "Unauthorized",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/responses/UnauthorizedError"
+								}
+							}
+						}
+					},
+					"404" : {
+						"description" : "Not Found"
+					},
+					"406" : {
+						"description" : "Not Acceptable"
+					}
+				}
+			},
+			"post" : {
+				"tags" : [ "AbsenceBalances" ],
+				"summary" : "Payroll update",
+				"operationId" : "postAbsenceBalance",
+				"requestBody" : {
+					"description" : "Data coming in from payroll system",
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/PayrollRequest"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "Success OK",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/PayrollResponse"
+								}
+							}
+						}
+					},
+					"400" : {
+						"description" : "Bad Request"
+					},
+					"401" : {
+						"description" : "Unauthorized",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/responses/UnauthorizedError"
+								}
+							}
+						}
+					},
+					"404" : {
+						"description" : "Not Found"
+					},
+					"406" : {
+						"description" : "Not Acceptable"
+					}
+				}
+			}
 		}
 	},
-	"paths": {
-		"/newJoiners/": {
-			"get": {
-				"tags": [
-					"Employee"
-				],
-				"operationId": "ApiGetEmployeeNewJoiners",
-				"responses": {
-					"200": {
-						"description": "Success",
-						"content": {
-							"text/plain": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"text/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/active/": {
-			"get": {
-				"tags": [
-					"Employee"
-				],
-				"operationId": "ApiGetEmployeeActive",
-				"responses": {
-					"200": {
-						"description": "Success",
-						"content": {
-							"text/plain": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"text/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/leavers/": {
-			"get": {
-				"tags": [
-					"Employee"
-				],
-				"operationId": "ApiGetEmployeeLeavers",
-				"parameters": [
-					{
-						"name": "fromDate",
-						"in": "query",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
+	"components" : {
+		"schemas" : {
+			"StartersResponse" : {
+				"type" : "object",
+				"properties" : {
+					"count" : {
+						"type" : "integer",
+						"format" : "int32",
+						"example" : 1
 					},
-					{
-						"name": "toDate",
-						"in": "query",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "test",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
+					"data" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/StartersResponse_data"
 						}
 					}
-				],
-				"responses": {
-					"200": {
-						"description": "Success",
-						"content": {
-							"text/plain": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"text/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
+				},
+				"description" : "Response data for Employee new starters"
+			},
+			"PayrollRequest" : {
+				"type" : "array",
+				"example" : [ {
+					"id" : "a040E000002OIwuQAG",
+					"data" : {
+						"payDate" : "2018-01-01",
+						"netPay" : 1250
+					}
+				}, {
+					"id" : "a040E000002OIx9QAG",
+					"data" : {
+						"payDate" : "2018-01-01",
+						"netPay" : 1300
+					}
+				} ],
+				"items" : {
+					"$ref" : "#/components/schemas/PayrollRequest_inner"
+				}
+			},
+			"PayrollResponse" : {
+				"type" : "object",
+				"properties" : {
+					"hasErrors" : {
+						"type" : "boolean"
+					},
+					"success" : {
+						"type" : "string",
+						"format" : "int64",
+						"example" : "2"
+					},
+					"errors" : {
+						"type" : "string",
+						"format" : "int64",
+						"example" : "0"
+					},
+					"results" : {
+						"type" : "array",
+						"example" : [ {
+							"id" : "5003000000D8cuI",
+							"statusCode" : "200"
+						}, {
+							"id" : "500300EA00D4cuI",
+							"statusCode" : "200"
+						} ],
+						"items" : {
+							"$ref" : "#/components/schemas/PayrollResponse_results"
 						}
+					}
+				}
+			},
+			"Error" : {
+				"type" : "object",
+				"properties" : {
+					"message" : {
+						"type" : "string",
+						"example" : "Session expired or invalid"
+					},
+					"errorCode" : {
+						"type" : "string",
+						"example" : "INVALID_SESSION_ID"
+					}
+				},
+				"description" : "Container for error messages"
+			},
+			"StartersResponse_data" : {
+				"type" : "object",
+				"properties" : {
+					"employeeNumber" : {
+						"type" : "string",
+						"example" : "EMP000001"
+					},
+					"salary" : {
+						"type" : "number",
+						"format" : "double",
+						"nullable" : true,
+						"example" : 26000
+					},
+					"salaryPeriod" : {
+						"type" : "string",
+						"enum" : [ "Annual", "Monthly", "Weekly" ]
+					},
+					"name" : {
+						"type" : "string",
+						"example" : "David Flannigan"
+					},
+					"startDate" : {
+						"type" : "string",
+						"format" : "date"
+					}
+				}
+			},
+			"PayrollRequest_inner_data" : {
+				"type" : "object",
+				"properties" : {
+					"payDate" : {
+						"type" : "string",
+						"format" : "date"
+					},
+					"netPay" : {
+						"type" : "number",
+						"format" : "double"
+					}
+				}
+			},
+			"PayrollRequest_inner" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "string"
+					},
+					"data" : {
+						"$ref" : "#/components/schemas/PayrollRequest_inner_data"
+					}
+				}
+			},
+			"PayrollResponse_results" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "string"
+					},
+					"statusCode" : {
+						"type" : "string"
 					}
 				}
 			}
 		},
-		"/": {
-			"get": {
-				"tags": [
-					"Employee"
-				],
-				"operationId": "ApiGetEmployeeById",
-				"parameters": [
-					{
-						"name": "id",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Success",
-						"content": {
-							"text/plain": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							},
-							"text/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
+		"responses" : {
+			"UnauthorizedError" : {
+				"$ref" : "#/components/schemas/Error"
+			}
+		},
+		"parameters" : {
+			"pageStartFrom" : {
+				"name" : "startingFrom",
+				"in" : "query",
+				"description" : "The ID of the record to start the paging from",
+				"required" : false,
+				"style" : "form",
+				"explode" : true,
+				"schema" : {
+					"type" : "string"
+				},
+				"examples" : {
+					"startingFrom" : {
+						"summary" : "Apex ID of the object to start paging from",
+						"value" : "a040E000002OIwuQAG"
 					}
 				}
+			},
+			"pageSize" : {
+				"name" : "pageSize",
+				"in" : "query",
+				"description" : "The number of items in the page to return",
+				"required" : false,
+				"style" : "form",
+				"explode" : true,
+				"schema" : {
+					"maximum" : 500,
+					"minimum" : 1,
+					"type" : "string",
+					"format" : "integer"
+				},
+				"examples" : {
+					"pageSize" : {
+						"summary" : "Apex ID of the object to start paging from",
+						"value" : 250
+					}
+				}
+			}
+		},
+		"securitySchemes" : {
+			"bearerAuth" : {
+				"type" : "http",
+				"scheme" : "bearer"
 			}
 		}
 	}
