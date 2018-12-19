@@ -1,0 +1,65 @@
+{{#operations}}
+
+@RestResource(urlMapping='/{{{pathPrefix}}}/*')
+global with sharing class {{classname}}Controller {
+
+	@HttpGet
+	global static string Get(){
+		String pathPrefix = '/{{{pathPrefix}}}';
+		String requestUri = RestContext.request.requestURI;
+		if(!requestUri.endsWith('/')){
+		    requestUri = requestUri + '/';
+		}
+
+        String path = requestUri.substringAfter(pathPrefix);
+
+        {{#operation}}
+        {{#@first}}
+        if(Pattern.matches('{{{path}}}{{#hasParams}}.*{{/hasParams}}$', path)){
+            String params = path.substringAfter('{{{path}}}');
+            return {{operationId}}Handler(params);
+        }
+        {{/@first}}
+        {{^@first}}
+        else if(Pattern.matches('{{{path}}}{{#hasParams}}.*{{/hasParams}}$', path)){
+            String params = path.substringAfter('{{{path}}}');
+            return {{operationId}}Handler(params);
+        }
+        {{/@first}}
+        {{/operation}}
+        else{}
+        return 'failed';
+	}
+
+
+{{#operation}}
+	//{{operationId}}
+	private static {{returnType}} {{operationId}}Handler(String path){
+        {{#hasParams}}
+        if(!path.endsWith('/')){
+            path = path.substringBeforeLast('/');
+        }
+        String[] args = path.split('/');
+        {{#pathParams}}
+        {{dataType}} {{paramName}} = args.remove(0);
+        {{/pathParams}}
+        {{#queryParams}}
+        {{dataType}} {{paramName}} = RestContext.request.params.get('{{paramName}}');
+        {{/queryParams}}
+        {{/hasParams}}
+	    return {{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+	}
+
+{{/operation}}
+
+
+{{#operation}}
+	//{{operationId}}
+	private static {{returnType}} {{operationId}}({{#allParams}}{{dataType}} {{paramName}} {{#hasMore}}, {{/hasMore}}{{/allParams}}){
+        //Do the thing!
+        return '{{operationId}}';
+	}
+
+{{/operation}}
+}
+{{/operations}}
