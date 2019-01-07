@@ -22,7 +22,7 @@ public class {{classname}}{{operationId}}Controller extends AbstractBaseControll
     protected override HttpResponse handle{{httpMethod}}() {
 {{#hasParams}}
     {{#queryParams}}
-        {{dataType}} {{paramName}} = ({{dataType}}) Request.QueryParameters.get('{{paramNameUnescaped}}').value();
+        {{dataType}} {{paramName}} = ({{dataType}}) Request.QueryParameters.get('{{paramName}}').value();
     {{/queryParams}}
 {{/hasParams}}
     }

@@ -25,18 +25,17 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 
 		embeddedTemplateDir = templateDir = getTemplateDir();
 		outputFolder = "generated-code" + File.separator + "apex";
-		apiPackage = "classes";
-		modelPackage = "classes";
-		testPackage = "force-app.main.default.classes";
+		apiPackage = "classes.controllers";
+		modelPackage = "classes.dtos";
+		testPackage = "force-app.tests.default.classes";
 		dateLibrary = "";
 
 		// apiTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
-		// apiTestTemplateFiles.put("api_test.mustache", ".cls");
 		// apiTestTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
 		//modelTemplateFiles.put("model.mustache", ".cls");
 		// modelTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
-		// modelTestTemplateFiles.put("model_test.mustache", ".cls");
-		// modelTestTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
+
+		//
 
 //		cliOptions.add(CliOption.newString(CLASS_PREFIX, "Prefix for generated classes. Set this to avoid overwriting existing classes in your org."));
 //		cliOptions.add(CliOption.newString(API_VERSION, "The Metadata API version number to use for components in this package."));
@@ -103,6 +102,12 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		modelTemplateFiles.put("model.mustache", ".cls");
 		modelTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
 
+		apiTestTemplateFiles.put("controller_test.mustache", ".cls");
+		apiTestTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
+
+		modelTestTemplateFiles.put("model_test.mustache", ".cls");
+		modelTestTemplateFiles.put("cls-meta.mustache", ".cls-meta.xml");
+
 		importMapping.clear();
 
 
@@ -132,11 +137,16 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		return name;
 	}
 
+	public String apiTestFileFolder() {
+		return outputFolder + File.separator + testPackage().replace('.', File.separatorChar);
+	}
+
+
 	@Override
 	public String toModelName(String name) {
 		String modelName = super.toModelName(name);
 
-		// Max length is 40; save the last 4 for "Test"
+		// Max length is 40; save the last 8 for "Test" and "_DTO"
 		if (modelName.length() > 32) {
 			modelName = modelName.substring(0, 32);
 		}
@@ -224,8 +234,4 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 	public String toApiName(String name) {
 		return camelize(name + "Controller");
 	}
-
-
 }
-
-
