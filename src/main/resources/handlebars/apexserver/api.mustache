@@ -1,31 +1,47 @@
 {{#operations}}
+//.register(new {{classname}}('someuri')
+public class {{classname}} extends AbstractBaseController {
 
-public class {{classname}}{{operationId}}Controller extends AbstractBaseController {
-
-    public {{classname}}{{operationId}}Controller(String uri){
+    public {{classname}}(String uri){
         super(uri);
     }
 
+{{! Loop through operations }}
 {{#operation}}
     protected override void handleConfigure{{httpMethod}}() {
-{{#hasParams}}
-    {{#queryParams}}
+
+    {{~#queryParams}}
+
+        {{! add param to QueryParam list, and terminate, unless its also required OR an enum }}
         Request.QueryParameters.add{{dataType}}Parameter('{{paramName}}'){{#unless required}}{{#unless isEnum}};{{/unless}}{{/unless}}
-        {{#required}}.Mandatory(){{#unless isEnum}};{{/unless}}{{/required}}
-        {{#isEnum}}.Restrict(new List<{{dataType}}>{});{{/isEnum}}
-    {{/queryParams}}
-{{/hasParams}}
+        {{#required}}{{! If required then set mandatory and terminate in semi colon, unless this is also an enum }}
+            .Mandatory(){{#unless isEnum}};{{/unless}}
+        {{/required}}
+        {{#isEnum}}{{! If enum then restrict values }}
+            .Restrict(new List<{{dataType}}>(
+                {{~#allowableValues~}}
+                    {{~#enumVars~}}
+                        '{{{value}}}'{{^@last}}, {{/@last}}
+                    {{~/enumVars~}}
+                {{~/allowableValues~}}));
+        {{/isEnum}}
+    {{~/queryParams}}
     }
+
 {{/operation}}
 
 {{#operation}}
     protected override HttpResponse handle{{httpMethod}}() {
-{{#hasParams}}
-    {{#queryParams}}
+
+    {{~#queryParams}}
+
         {{dataType}} {{paramName}} = ({{dataType}}) Request.QueryParameters.get('{{paramName}}').value();
-    {{/queryParams}}
-{{/hasParams}}
+
+    {{~/queryParams}}
+
+        return SomeServiceLayer.{{operationId}}({{#queryParams}}{{paramName}}{{^@last}}, {{/@last}}{{/queryParams}});
     }
+
 {{/operation}}
 }
 

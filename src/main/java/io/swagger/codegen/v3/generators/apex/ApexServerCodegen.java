@@ -141,6 +141,12 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 		return outputFolder + File.separator + testPackage().replace('.', File.separatorChar);
 	}
 
+	@Override
+	public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+		objs = super.postProcessOperations(objs);
+
+		return objs;
+	}
 
 	@Override
 	public String toModelName(String name) {
@@ -233,5 +239,20 @@ public class ApexServerCodegen extends AbstractJavaCodegen {
 	@Override
 	public String toApiName(String name) {
 		return camelize(name + "Controller");
+	}
+
+	@Override
+	public String toEnumValue(String value, String datatype) {
+		if ("Integer".equals(datatype) || "Double".equals(datatype)) {
+			return value;
+		} else if ("Long".equals(datatype)) {
+			// add l to number, e.g. 2048 => 2048l
+			return value + "l";
+		} else if ("Float".equals(datatype)) {
+			// add f to number, e.g. 3.14 => 3.14f
+			return value + "f";
+		} else {
+			return escapeText(value);
+		}
 	}
 }

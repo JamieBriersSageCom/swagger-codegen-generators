@@ -1,6 +1,3 @@
-/**
-* {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
-*/
 public class {{classname}}{{#parent}} extends {{{parent}}}{{/parent}}{{#interfaces}}{{#@first}} implements {{/@first}}{{^@first}}, {{/@first}}{{.}}{{/interfaces}} {
 
 {{#vars}}
@@ -18,4 +15,27 @@ public class {{classname}}{{#parent}} extends {{{parent}}}{{/parent}}{{#interfac
     {{/items.isEnum}}
     public {{{datatypeWithEnum}}} {{name}} { get; {{#isReadOnly}}private {{/isReadOnly}}set; }
 {{/vars}}
+
+
+    public static {{classname}} getExample() {
+        {{classname}} {{classVarName}} = new {{classname}}();
+
+        {{~#vars}}
+
+        {{classVarName}}.{{name}} = {{{example}}};
+
+        {{~/vars}}
+
+        return {{classVarName}};
+    }
+
+    public Boolean equals(Object obj) {
+        if (obj instanceof {{classname}}) {
+            {{classname}} {{classVarName}} = ({{classname}}) obj;
+
+            return {{#vars}}this.{{name}} == {{classVarName}}.{{name}}{{#hasMore}}
+                && {{/hasMore}}{{/vars}};
+        }
+        return false;
+    }
 }
